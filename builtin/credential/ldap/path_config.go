@@ -224,7 +224,8 @@ func (c *ConfigEntry) GetTLSConfig(host string) (*tls.Config, error) {
 		caPool := x509.NewCertPool()
 		ok := caPool.AppendCertsFromPEM([]byte(c.Certificate))
 		if !ok {
-			return nil, fmt.Errorf("could not append CA certificate")
+			ok = caPool.AppendCertsFromPEM([]byte(strings.TrimSpace(c.Certificate)))
+			return nil, fmt.Errorf("could not append CA certificate (success after trimming space: %v); string is \n%s\nbytes are \n%v\n", ok, c.Certificate, []byte(c.Certificate))
 		}
 		tlsConfig.RootCAs = caPool
 	}
